@@ -1,10 +1,7 @@
 from llama_index.core.vector_stores.types import VectorStore
 from llama_index.vector_stores.postgres import PGVectorStore
 from sqlalchemy.engine import make_url
-from app.db.session import SessionLocal as AppSessionLocal, engine as app_engine
 import sqlalchemy
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 singleton_instance = None
@@ -17,15 +14,9 @@ class CustomPGVectorStore(PGVectorStore):
     """
 
     def _connect(self) -> None:
-        self._engine = create_engine(self.connection_string)
-        self._session = sessionmaker(self._engine)
-
-        # Use our existing app engine and session so we can use the same connection pool
-        self._async_engine = app_engine
-        self._async_session = AppSessionLocal
+        super()._connect()
 
     async def close(self) -> None:
-        self._session.close_all()
         self._engine.dispose()
 
         await self._async_engine.dispose()

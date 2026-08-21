@@ -15,6 +15,7 @@ import llama_index.core
 
 from app.api.api import api_router
 from app.db.wait_for_db import check_database_connection
+from app.db.session import engine as async_engine
 from app.core.config import settings, AppEnvironment
 from app.loader_io import loader_io_router
 from contextlib import asynccontextmanager
@@ -75,10 +76,13 @@ async def lifespan(app: FastAPI):
     )
     cfg.set_main_option("sqlalchemy.url", db_url)
     engine = create_engine(db_url, echo=True)
-    if not check_current_head(cfg, engine):
-        raise Exception(
-            "Database is not up to date. Please run `poetry run alembic upgrade head`"
-        )
+    try:
+        if not check_current_head(cfg, engine):
+            raise Exception(
+                "Database is not up to date. Please run `poetry run alembic upgrade head`"
+            )
+    finally:
+        engine.dispose()
     # initialize pg vector store singleton
     vector_store = await get_vector_store_singleton()
     vector_store = cast(CustomPGVectorStore, vector_store)
@@ -97,6 +101,7 @@ async def lifespan(app: FastAPI):
     yield
     # This section is run on app shutdown
     await vector_store.close()
+    await async_engine.dispose()
 
 
 app = FastAPI(
@@ -115,7 +120,7 @@ if settings.BACKEND_CORS_ORIGINS:
     # allow all origins
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin) for origin in origins],
+        allow_origins=[str(origin).rstrip("/") for origin in origins],
         allow_origin_regex="https://llama-app-frontend.*\.vercel\.app",
         allow_credentials=True,
         allow_methods=["*"],
