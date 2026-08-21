@@ -247,6 +247,8 @@ Estos pasos asumen que ya has seguido las instrucciones anteriores para configur
             - Puedes sustituir `llama-app-web-assets-preview` por el nombre del bucket S3 al que quieras cargar los archivos.
 1. Instala [`wkhtmltopdf`](https://wkhtmltopdf.org/) siguiendo las instrucciones para tu sistema operativo.
     - Puedes omitir este paso si usas la imagen devcontainer de GitHub Codespaces.
+    - En macOS, especialmente en equipos Intel (x86), puede ser necesario descargar e instalar manualmente el paquete `.pkg` desde la [página oficial de descargas](https://wkhtmltopdf.org/downloads). Homebrew puede ofrecer una instalación mediante `brew install --cask wkhtmltopdf`, pero su disponibilidad depende de la arquitectura y de la versión de macOS; compruébala con `brew search --cask wkhtmltopdf`.
+    - Después de instalarlo, verifica que el ejecutable esté disponible con `which wkhtmltopdf` y `wkhtmltopdf --version`.
 1. Entra en el entorno de Poetry con `poetry shell` desde la raíz del proyecto.
 1. Ejecuta el script: `python scripts/download_sec_pdf.py -o ~/mounted_folder --file-types="['10-Q','10-K']"`.
     - Tómate un descanso 🚽 mientras se ejecuta; tardará un rato.
