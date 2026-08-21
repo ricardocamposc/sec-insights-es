@@ -17,6 +17,7 @@ from llama_index.core.tools import FunctionTool, ToolMetadata, QueryEngineTool
 from llama_index.core.callbacks import CallbackManager
 from llama_index.core import Settings
 from llama_index.agent.openai import OpenAIAgent
+from llama_index.llms.openai import OpenAI
 from app.core.config import settings
 from app.chat.utils import build_title_for_document
 
@@ -80,7 +81,7 @@ def describe_financials(financials: StockFinancial) -> str:
 
 def get_tool_metadata_for_document(doc: DocumentSchema) -> ToolMetadata:
     doc_title = build_title_for_document(doc)
-    name = f"extract_json_from_sec_document[{doc_title}]"
+    name = f"sec_financials_{str(doc.id).replace('-', '')}"
     description = f"Returns basic financial data extracted from the SEC filing document {doc_title}"
     return ToolMetadata(
         name=name,
@@ -149,9 +150,11 @@ def get_api_query_engine_tool(
     polygon_io_tool = get_polygon_io_sec_tool(document)
     tool_metadata = get_tool_metadata_for_document(document)
     doc_title = build_title_for_document(document)
-    llm = Settings.llm.model_copy(
-        update={"callback_manager": callback_manager},
-        deep=True
+    llm = OpenAI(
+        model=settings.OPENAI_CHAT_LLM_NAME,
+        api_key=settings.OPENAI_API_KEY,
+        callback_manager=callback_manager,
+        reuse_client=False,
     )
     agent = OpenAIAgent.from_tools(
         [polygon_io_tool],
