@@ -39,6 +39,12 @@ class ChatCallbackHandler(BaseCallbackHandler):
         ignored_events = [CBEventType.CHUNKING, CBEventType.NODE_PARSING]
         super().__init__(ignored_events, ignored_events)
         self._send_chan = send_chan
+        self._pending_tasks: set[asyncio.Task] = set()
+
+    def _schedule_event(self, coroutine) -> None:
+        task = asyncio.create_task(coroutine)
+        self._pending_tasks.add(task)
+        task.add_done_callback(self._pending_tasks.discard)
 
     def on_event_start(
         self,
@@ -48,7 +54,7 @@ class ChatCallbackHandler(BaseCallbackHandler):
         **kwargs: Any,
     ) -> str:
         """Create the MessageSubProcess row for the event that started."""
-        asyncio.create_task(
+        self._schedule_event(
             self.async_on_event(
                 event_type, payload, event_id, is_start_event=True, **kwargs
             )
@@ -62,11 +68,15 @@ class ChatCallbackHandler(BaseCallbackHandler):
         **kwargs: Any,
     ) -> None:
         """Create the MessageSubProcess row for the event that completed."""
-        asyncio.create_task(
+        self._schedule_event(
             self.async_on_event(
                 event_type, payload, event_id, is_start_event=False, **kwargs
             )
         )
+
+    async def wait_for_pending_events(self) -> None:
+        while self._pending_tasks:
+            await asyncio.gather(*tuple(self._pending_tasks), return_exceptions=True)
 
     def get_metadata_from_event(
         self,
@@ -130,10 +140,9 @@ async def handle_chat_message(
     user_message: schema.UserMessageCreate,
     send_chan: MemoryObjectSendStream,
 ) -> None:
+    callback_handler = ChatCallbackHandler(send_chan)
     async with send_chan:
-        chat_engine = await get_chat_engine(
-            ChatCallbackHandler(send_chan), conversation
-        )
+        chat_engine = await get_chat_engine(callback_handler, conversation)
         await send_chan.send(
             StreamedMessageSubProcess(
                 event_id=str(uuid4()),
@@ -166,3 +175,4 @@ Remember - if I have asked a relevant financial question, use your tools.
                     content="Sorry, I either wasn't able to understand your question or I don't have an answer for it."
                 )
             )
+        await callback_handler.wait_for_pending_events()
