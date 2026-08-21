@@ -2,7 +2,9 @@ from typing import Dict, List, Optional
 import logging
 from pathlib import Path
 from datetime import datetime
+import threading
 import s3fs
+import fsspec.asyn as fsspec_async
 from fsspec.asyn import AsyncFileSystem
 from llama_index.core import (
     VectorStoreIndex,
@@ -12,7 +14,6 @@ from llama_index.core import (
 from llama_index.core.vector_stores.types import VectorStore
 from tempfile import TemporaryDirectory
 import requests
-import nest_asyncio
 from datetime import timedelta
 from cachetools import cached, TTLCache
 from llama_index.readers.file.docs.base import PDFReader
@@ -51,9 +52,29 @@ from app.chat.qa_response_synth import get_custom_response_synth
 logger = logging.getLogger(__name__)
 
 
-logger.info("Applying nested asyncio patch")
-nest_asyncio.apply()
+def close_s3_fs(fs: AsyncFileSystem) -> None:
+    """Close the S3 client and the background loop created by fsspec.
 
+    s3fs creates a process-wide daemon event loop for synchronous filesystem
+    operations. Leaving that loop to the garbage collector produces asyncio
+    destructor errors when a chat request finishes or the process shuts down.
+    """
+    if getattr(fs, "_s3creator", None) is not None:
+        fs.close_session(fs.loop, fs._s3creator)
+
+    loop = fsspec_async.loop[0]
+    thread = fsspec_async.iothread[0]
+    if loop is None:
+        return
+
+    if loop.is_running():
+        loop.call_soon_threadsafe(loop.stop)
+    if thread is not None and thread is not threading.current_thread():
+        thread.join(timeout=1)
+    if not loop.is_running() and not loop.is_closed():
+        loop.close()
+    fsspec_async.loop[0] = None
+    fsspec_async.iothread[0] = None
 
 
 def get_s3_fs() -> AsyncFileSystem:
@@ -207,9 +228,12 @@ async def get_chat_engine(
 ) -> OpenAIAgent:
     callback_manager = CallbackManager([callback_handler])
     s3_fs = get_s3_fs()
-    doc_id_to_index = await build_doc_id_to_index_map(
-        callback_manager, conversation.documents, fs=s3_fs
-    )
+    try:
+        doc_id_to_index = await build_doc_id_to_index_map(
+            callback_manager, conversation.documents, fs=s3_fs
+        )
+    finally:
+        close_s3_fs(s3_fs)
     id_to_doc: Dict[str, DocumentSchema] = {
         str(doc.id): doc for doc in conversation.documents
     }
@@ -275,6 +299,7 @@ Any questions about company-related financials or other metrics should be asked 
         model=settings.OPENAI_CHAT_LLM_NAME,
         streaming=True,
         api_key=settings.OPENAI_API_KEY,
+        reuse_client=False,
     )
     chat_messages: List[MessageSchema] = conversation.messages
     chat_history = get_chat_history(chat_messages)
