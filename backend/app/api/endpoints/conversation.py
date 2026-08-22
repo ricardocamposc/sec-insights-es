@@ -161,6 +161,7 @@ async def message_conversation(
             await db.commit()
             final_message = await crud.fetch_message_with_sub_processes(db, message_id)
             yield final_message.json()
+            await db.close()
 
     return EventSourceResponse(event_publisher())
 
