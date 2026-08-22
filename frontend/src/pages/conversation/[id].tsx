@@ -17,6 +17,7 @@ import { BsArrowUpCircle } from "react-icons/bs";
 import { useModal } from "~/hooks/utils/useModal";
 import { useIntercom } from "react-use-intercom";
 import useIsMobile from "~/hooks/utils/useIsMobile";
+import { ENABLE_INTERCOM } from "~/constants";
 
 export default function Conversation() {
   const router = useRouter();
@@ -140,8 +141,8 @@ export default function Conversation() {
       <div className="landing-page-gradient-1 relative flex h-screen w-screen items-center justify-center">
         <div className="flex h-min w-3/4 flex-col items-center justify-center rounded border bg-white p-4">
           <div className="text-center text-xl ">
-            Sorry, the mobile view of this page is currently a work in progress.
-            Please switch to desktop!
+            La vista móvil de esta página todavía está en desarrollo. ¡Cambia a
+            una pantalla más grande!
           </div>
           <button
             onClick={() => {

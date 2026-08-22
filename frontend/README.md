@@ -39,6 +39,7 @@ cp .env.example .env
 | Variable | Descripción | Valor para desarrollo local |
 | --- | --- | --- |
 | `NEXT_PUBLIC_BACKEND_URL` | URL base del backend que utilizará el navegador. | `http://localhost:8000/` |
+| `NEXT_PUBLIC_ENABLE_INTERCOM` | Activa el widget externo de soporte de Intercom. | `false` |
 
 La variable debe comenzar por `NEXT_PUBLIC_` para que Next.js pueda exponerla
 al código del navegador. El backend utiliza el prefijo `/api` internamente;
