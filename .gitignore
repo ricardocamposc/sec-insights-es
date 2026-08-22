@@ -14,7 +14,7 @@ __pycache__/
 .mypy_cache/
 
 # Local services and generated data
-backend/volume/
+backend/volume*/
 backend/.localstack/
 
 # Frontend dependencies and build output
