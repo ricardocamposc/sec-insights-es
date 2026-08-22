@@ -1,0 +1,34 @@
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+
+# Python environments and generated files
+.venv/
+backend/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Local services and generated data
+backend/volume/
+backend/.localstack/
+
+# Frontend dependencies and build output
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Operating-system and editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Logs and local certificates
+*.log
+*.pem
+*.key

@@ -1,50 +1,191 @@
-# SEC Insights Backend
-Live at https://secinsights.ai/
-## Setup Dev Workspace
-1. Install [pyenv](https://github.com/pyenv/pyenv#automatic-installer) and then use it to install the Python version in `.python-version`.
-    1. install pyenv with `curl https://pyenv.run | bash`
-    * This step can be skipped if you're running from the devcontainer image in Github Codespaces
-1. [Install docker](https://docs.docker.com/engine/install/)
-    * This step can be skipped if you're running from the devcontainer image in Github Codespaces
-1. Run `poetry shell`
-1. Run `poetry install` to install dependencies for the project
-1. Create the `.env` file and source it. The `.env.development` file is a good template.
+# Backend de SEC Insights
+Disponible en https://secinsights.ai/
+## Configuración del entorno de desarrollo
+Las instrucciones de comandos usan un shell compatible con Bash. En Windows
+puedes ejecutarlas mediante WSL, Git Bash o adaptar los comandos a PowerShell.
+
+1. Instala [pyenv](https://github.com/pyenv/pyenv#automatic-installer) —o una herramienta equivalente para gestionar versiones de Python— y usa la versión indicada en `.python-version`.
+    * Puedes omitir este paso si usas la imagen devcontainer de GitHub Codespaces.
+1. [Instala Docker](https://docs.docker.com/engine/install/) para tu sistema operativo.
+    * Puedes omitir este paso si usas la imagen devcontainer de GitHub Codespaces.
+1. Ejecuta `poetry shell`.
+1. Ejecuta `poetry install` para instalar las dependencias del proyecto.
+1. Crea el archivo `.env` y cárgalo. `.env.development` es una buena plantilla.
     1. `cp .env.development .env`
     1. `set -a`
     1. `source .env`
-1. Run the database migrations with `make migrate`
-1. Run `make run` to start the server locally
-    - This spins up the Postgres 15 DB & Localstack in their own docker containers.
-    - The server will not run in a container but will instead run directly on your OS.
-        - This is to allow for use of debugging tools like `pdb`
-1. Lastly, you will likely want to populate your local database with some sample SEC filings
-    - We have a script for this! But first, open your `.env` file and replace the placeholder value for the `OPENAI_API_KEY` with your own OpenAI API key
-        - At some point you will want to do the same for the other secret keys in here like `POLYGON_IO_API_KEY`, `AWS_KEY`, & `AWS_SECRET`
-        - To follow the [SEC's Internet Security Policy](https://www.sec.gov/os/webmaster-faq#code-support), make sure to also replace the `SEC_EDGAR_COMPANY_NAME` & `SEC_EDGAR_EMAIL` values in the `.env` file with your own values.
-    - Source the file again with `set -a` then `source .env`
-    - Run `make seed_db_local`
-        - If this step fails, you may find it helpful to run `make refresh_db` to wipe your local database and re-start with emptied tables.
-    - Done 🏁! You can run `make run` again and you should see some documents loaded at http://localhost:8000/api/document
+1. Ejecuta las migraciones de la base de datos con `make migrate`.
+1. Ejecuta `make run` para iniciar el servidor localmente.
+    - Esto inicia PostgreSQL 15 y LocalStack en sus propios contenedores Docker.
+    - El servidor no se ejecuta en un contenedor, sino directamente en tu sistema operativo.
+        - Así puedes usar herramientas de depuración como `pdb`.
+1. Finalmente, probablemente querrás cargar algunos informes SEC de ejemplo en tu base de datos local.
+    - Existe un script para ello. Primero, abre `.env` y sustituye el valor de ejemplo de `OPENAI_API_KEY` por tu propia clave de API de OpenAI.
+        - También tendrás que hacer lo mismo con otras claves como `POLYGON_IO_API_KEY`, `AWS_KEY` y `AWS_SECRET`.
+        - Para cumplir la [política de seguridad en Internet de la SEC](https://www.sec.gov/os/webmaster-faq#code-support), sustituye también `SEC_EDGAR_COMPANY_NAME` y `SEC_EDGAR_EMAIL` por tus propios valores.
+    - Vuelve a cargar el archivo con `set -a` y después `source .env`.
+    - Ejecuta `make seed_db_local`.
+        - Si falla, puede ser útil ejecutar `make refresh_db` para limpiar la base de datos local y reiniciar las tablas vacías.
+    - ¡Listo! 🏁 Ejecuta `make run` de nuevo y deberías ver documentos cargados en http://localhost:8000/api/document.
 
-For any issues in setting up the above or during the rest of your development, you can check for solutions in the following places:
+Si tienes problemas al configurar lo anterior o durante el desarrollo, puedes buscar soluciones en los siguientes lugares:
 - [`backend/troubleshooting.md`](https://github.com/run-llama/sec-insights/blob/main/backend/troubleshooting.md)
-- [Open & already closed Github Issues](https://github.com/run-llama/sec-insights/issues?q=is%3Aissue+is%3Aclosed)
-- The [#sec-insights discord channel](https://discord.com/channels/1059199217496772688/1150942525968879636)
+- [Issues abiertos y ya cerrados de GitHub](https://github.com/run-llama/sec-insights/issues?q=is%3Aissue+is%3Aclosed)
+- El [canal #sec-insights de Discord](https://discord.com/channels/1059199217496772688/1150942525968879636)
 
-## LLM Observability
+## Variables de entorno
 
-This project will automatically spin up a local version of [Arize Phoenix](https://phoenix.arize.com/) for you and send traces to it as you're using the chat interface.
-Arize Phoenix is a open source LLM observability & evaluation tool. LlamaIndex's event instrumentation system is deeply integrated with Arize Phoenix to make it easier for you to debug your LLM application during development. Simply open the Arize Phoenix Dashboard at [`http://localhost:6006/`](http://localhost:6006/) when running SEC Insights locally to see the traced calls to LLMs, Embedding Models, Vector DBs, and more.
+El backend carga las variables desde `backend/.env`. Puedes crear el archivo a
+partir de `.env.development`:
+
+```bash
+cp .env.development .env
+```
+
+### Variables obligatorias
+
+Estas variables son requeridas por `app/core/config.py` para iniciar el
+backend:
+
+| Variable | Descripción | Valor local recomendado |
+| --- | --- | --- |
+| `DATABASE_URL` | URL de PostgreSQL. | `postgresql://user:password@127.0.0.1:5435/llama_app_db` si ejecutas FastAPI en el host; dentro del contenedor usa `postgresql://user:password@db:5432/llama_app_db`. |
+| `OPENAI_API_KEY` | Clave de API para el LLM y embeddings. | Tu clave real de OpenAI. |
+| `AWS_KEY` | Clave de acceso usada por S3/LocalStack. | `test` en local. |
+| `AWS_SECRET` | Clave secreta usada por S3/LocalStack. | `test` en local. |
+| `POLYGON_IO_API_KEY` | Clave para consultas financieras cuantitativas. | Tu clave real de Polygon.io. |
+| `S3_BUCKET_NAME` | Bucket para los contextos e índices de LlamaIndex. | `llama-app-backend-local`. |
+| `S3_ASSET_BUCKET_NAME` | Bucket para los PDF y otros assets. | `llama-app-web-assets-local`. |
+| `CDN_BASE_URL` | URL desde la que se sirven los assets locales. | `http://llama-app-web-assets-local.s3-website.localhost.localstack.cloud:4566`. |
+
+`OPENAI_API_KEY` es necesaria para que el chat funcione y
+`POLYGON_IO_API_KEY` para las consultas cuantitativas. No introduzcas claves
+reales en archivos versionados.
+
+### Variables recomendadas
+
+```env
+BACKEND_CORS_ORIGINS='["http://localhost:3000","http://127.0.0.1:3000","http://localhost:8000","http://127.0.0.1:8000"]'
+LOG_LEVEL=DEBUG
+RENDER=False
+SEC_EDGAR_COMPANY_NAME=NombreDeTuOrganizacion
+SEC_EDGAR_EMAIL=tu-email@dominio.com
+```
+
+`SEC_EDGAR_COMPANY_NAME` y `SEC_EDGAR_EMAIL` identifican al cliente ante la
+SEC cuando se descargan informes. Usa un nombre y un email válidos.
+
+### Variables opcionales
+
+Si no se definen, el backend usa estos valores predeterminados:
+
+| Variable | Predeterminado | Uso |
+| --- | --- | --- |
+| `PROJECT_NAME` | `llama_app` | Nombre de la aplicación FastAPI. |
+| `API_PREFIX` | `/api` | Prefijo de las rutas de la API. |
+| `VECTOR_STORE_TABLE_NAME` | `pg_vector_store` | Tabla de vectores en PostgreSQL. |
+| `OPENAI_CHAT_LLM_NAME` | `gpt-4o-mini` | Modelo utilizado para el chat. |
+| `SENTRY_DSN` | vacío | Activa Sentry si se define. |
+| `RENDER_GIT_COMMIT` | vacío | Release enviado a Sentry. |
+| `LOADER_IO_VERIFICATION_STR` | valor incluido en `config.py` | Ruta de verificación de Loader.io. |
+| `IS_PULL_REQUEST` | `False` | Identifica previews de pull requests en Render. |
+| `CODESPACES` | `False` | Activa ajustes específicos de GitHub Codespaces. |
+| `CODESPACE_NAME` | vacío | Nombre del Codespace. |
+
+`IS_PREVIEW_ENV` también puede definirse en Render para activar la configuración
+de preview; no es necesaria en local.
+
+### Variables específicas de Docker
+
+`backend/.env.docker` redefine `DATABASE_URL` con el hostname interno `db`.
+No uses ese valor cuando ejecutes el backend directamente en el host.
+
+La imagen actual `localstack/localstack:latest` puede requerir también
+`LOCALSTACK_AUTH_TOKEN` en el entorno de Docker. Esta variable la consume
+LocalStack, no FastAPI, y debe contener un token válido si la imagen lo exige.
+
+`LOCALSTACK_AUTH_TOKEN` no es un valor aleatorio ni una contraseña que puedas
+inventar. Es una credencial emitida por LocalStack y se obtiene desde la
+[aplicación web de LocalStack](https://app.localstack.cloud/), en la sección de
+Auth Tokens. Para desarrollo local crea un Developer Auth Token; los entornos
+de CI deben utilizar un CI Auth Token. Mantén el token fuera del repositorio y
+no lo compartas públicamente.
+
+Añádelo a `backend/.env`:
+
+```env
+LOCALSTACK_AUTH_TOKEN=tu_token_de_localstack
+```
+
+`docker-compose.yml` transmite esta variable al contenedor de LocalStack y
+detiene el arranque con un mensaje claro si no está definida. No es necesario
+modificar el código Python/FastAPI: el token solo sirve para autenticar y
+activar el servicio de LocalStack.
+
+Para comprobar la activación después de iniciar Docker:
+
+```bash
+curl http://localhost:4566/_localstack/info
+```
+
+Consulta la [documentación oficial de Auth Tokens de LocalStack](https://docs.localstack.cloud/getting-started/auth-token/)
+para crear, rotar o revocar tokens.
+
+## Ejecución local recomendada
+
+Para ejecutar SEC Insights en un equipo local no necesitas instalar un cliente
+del sistema para montar S3 ni montar manualmente un bucket S3. La aplicación usa:
+
+- PostgreSQL/PGVector en Docker.
+- LocalStack en Docker para simular S3.
+- La biblioteca Python `s3fs`, ya incluida en las dependencias del backend,
+  para comunicarse con LocalStack, independientemente del sistema operativo.
+
+Después de configurar `.env`, ejecuta desde `backend/`:
+
+```bash
+poetry install
+make migrate
+make seed_db_local
+make run
+```
+
+`make seed_db_local` crea el bucket local de LocalStack, descarga los informes
+SEC de ejemplo de Amazon y Meta, carga los PDF y registra los documentos en la
+base de datos. No requiere instalar `s3fs` como herramienta del sistema.
+
+En otra terminal, ejecuta el frontend desde `frontend/`:
+
+```bash
+npm i
+npm run dev
+```
+
+La aplicación estará disponible en `http://localhost:3000` y el backend en
+`http://localhost:8000`.
+
+## Flujo opcional: montar un bucket S3 real
+
+La instalación de un cliente `s3fs` compatible con tu sistema operativo solo es
+necesaria para el flujo opcional del descargador que monta un bucket S3 real
+como una carpeta local. Este flujo no forma parte de la ejecución local normal
+de SEC Insights y se describe en la sección
+[Descargador de documentos SEC](#descargador-de-documentos-sec-opcional).
+
+## Observabilidad del LLM
+
+Este proyecto inicia automáticamente una versión local de [Arize Phoenix](https://phoenix.arize.com/) y le envía trazas mientras usas la interfaz de chat.
+Arize Phoenix es una herramienta open source de observabilidad y evaluación de LLM. El sistema de instrumentación de eventos de LlamaIndex está integrado con Arize Phoenix para facilitar la depuración de tu aplicación LLM durante el desarrollo. Abre el panel de Arize Phoenix en [`http://localhost:6006/`](http://localhost:6006/) al ejecutar SEC Insights localmente para ver las llamadas trazadas a LLM, modelos de embeddings, bases de datos vectoriales y más.
 
 ## Scripts
-The `scripts/` folder contains several scripts that are useful for both operations and development.
+La carpeta `scripts/` contiene varios scripts útiles tanto para operaciones como para desarrollo.
 
 ## Chat 🦙
-The script at `scripts/chat_llama.py` spins up a repl interface to start a chat within your terminal by interacting with the API directly. This is useful for debugging issues without having to interact with a full frontend.
+El script `scripts/chat_llama.py` inicia una interfaz REPL para conversar desde el terminal interactuando directamente con la API. Es útil para depurar problemas sin tener que usar el frontend completo.
 
-The script takes an optional `--base_url` argument that defaults to `http://localhost:8000` but can be specified to make the script point to the prod or preview servers. The `Makefile` contains `chat` & `chat_prod` commands that specify this arg for you.
+El script acepta un argumento opcional `--base_url`, cuyo valor predeterminado es `http://localhost:8000`, pero puede apuntar a los servidores de producción o preview. El `Makefile` contiene el comando `chat` para usar esta URL.
 
-Usage is as follows:
+Uso:
 
 ```
 $ poetry shell  # if you aren't already in your poetry shell
@@ -74,81 +215,75 @@ Created conversation with ID 8371bbc8-a7fd-4b1f-889b-d0bc882df2a5
 Hello! How can I assist you today?
 ```
 
-## SEC Document Downloader 📃
-We have a script to easily download SEC 10-K & 10-Q files! This is a single step of the larger seed script described in the next section. Unless you have some use for just running this step on it's own, you probably want to stick to the Seed script described in the section below 🙂
-However, the setup instructions for this script are a pre-requisite for running the seed script.
+## Descargador de documentos SEC 📃 (opcional)
+Tenemos un script para descargar fácilmente archivos SEC 10-K y 10-Q. Es un paso individual del script de carga de datos descrito en la siguiente sección. Salvo que necesites ejecutar solo este paso, probablemente querrás usar el script de carga descrito más abajo 🙂. Sin embargo, las instrucciones de configuración de este script son un requisito previo para ejecutar el script de carga.
 
-No API keys are needed to use this, it calls the SEC's free to use Edgar API.
+Esta sección describe el flujo avanzado para descargar documentos y subirlos a
+un bucket S3 real mediante una carpeta montada con un cliente `s3fs`. No es
+necesario para la ejecución local estándar; para esa finalidad usa
+`make seed_db_local`.
 
-The instructions below explain a process to use the script to download the SEC filings, convert the to PDFs, and store them in an S3 bucket.
+No se necesitan claves de API: utiliza la API Edgar gratuita de la SEC.
 
-### Setup / Usage Instructions
-Pre-requisite setup steps to use the downloader script to load the SEC PDFs directly into an S3 bucket.
+Las instrucciones siguientes explican cómo usar el script para descargar informes SEC, convertirlos a PDF y almacenarlos en un bucket de S3.
 
-These steps assume you've already followed the steps above for setting up your dev workspace!
+### Instrucciones de configuración y uso
+Pasos de configuración necesarios para usar el descargador y cargar los PDF de la SEC directamente en un bucket de S3.
 
-1. Setup AWS CLI
-    1. Install AWS CLI
-        - This step can be skipped if you're running from the devcontainer image in Github Codespaces
-        - Steps:
-            - `curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"`
-            - `unzip awscliv2.zip`
-            - `sudo ./aws/install`
-    1. Configure AWS CLI
-        - This is mainly to set the AWS credentials that will later be used by s3fs
-        - Run `aws configure` and enter the access key & secret key for a AWS IAM user that has access to the PDFs where you want to store the SEC files.
-            - set the default AWS region to `us-east-1` (what we're primarily using).
-1. Setup [`s3fs`](https://github.com/s3fs-fuse/s3fs-fuse)
-    1. Install s3fs
-        - This step can be skipped if you're running from the devcontainer image in Github Codespaces
-        - `sudo apt install s3fs`
-    1. Setup a s3fs mounted folder
-        - Create the mounted folder locally `mkdir ~/mounted_folder`
+Estos pasos asumen que ya has seguido las instrucciones anteriores para configurar el entorno de desarrollo.
+
+1. Configura AWS CLI siguiendo las instrucciones oficiales para tu sistema operativo.
+    1. Puedes omitir la instalación si ya tienes AWS CLI disponible o si usas la imagen devcontainer de GitHub Codespaces.
+    1. Configura AWS CLI.
+        - Esto sirve principalmente para establecer las credenciales de AWS que usará s3fs.
+        - Ejecuta `aws configure` e introduce la clave de acceso y la clave secreta de un usuario IAM de AWS que tenga acceso a los PDF donde quieras almacenar los archivos SEC.
+            - Establece la región predeterminada de AWS en `us-east-1`.
+1. Configura un cliente [`s3fs`](https://github.com/s3fs-fuse/s3fs-fuse) compatible con tu sistema operativo.
+    1. Consulta la documentación del proyecto o el gestor de paquetes de tu sistema para instalarlo.
+        - Puedes omitir este paso si usas la imagen devcontainer de GitHub Codespaces.
+    1. Configura una carpeta montada con `s3fs`.
+        - Crea localmente la carpeta montada con `mkdir ~/mounted_folder`.
         - `s3fs llama-app-web-assets-preview ~/mounted_folder`
-            - You can replace `llama-app-web-assets-preview` with the name of the S3 bucket you want to upload the files to.
-1. Install [`wkhtmltopdf`](https://wkhtmltopdf.org/)
-    - This step can be skipped if you're running from the devcontainer image in Github Codespaces
-    - Steps:
-        - `sudo apt-get update`
-        - `sudo apt-get install wkhtmltopdf`
-1. Get into your poetry shell with `poetry shell` from the project's root directory.
-1. Run the script! `python scripts/download_sec_pdf.py -o ~/mounted_folder --file-types="['10-Q','10-K']"`
-    - Take a 🚽 break while it's running, it'll take a while!
-1. Go to AWS Console and verify you're seeing the SEC files in the S3 bucket.
+            - Puedes sustituir `llama-app-web-assets-preview` por el nombre del bucket S3 al que quieras cargar los archivos.
+1. Instala [`wkhtmltopdf`](https://wkhtmltopdf.org/) siguiendo las instrucciones para tu sistema operativo.
+    - Puedes omitir este paso si usas la imagen devcontainer de GitHub Codespaces.
+1. Entra en el entorno de Poetry con `poetry shell` desde la raíz del proyecto.
+1. Ejecuta el script: `python scripts/download_sec_pdf.py -o ~/mounted_folder --file-types="['10-Q','10-K']"`.
+    - Tómate un descanso 🚽 mientras se ejecuta; tardará un rato.
+1. Abre la consola de AWS y verifica que los archivos SEC aparecen en el bucket S3.
 
-## Seed DB Script 🌱
-There are a collection of scripts we have for seeding the database with a set of documents.
-The script in `scripts/seed_db.py` is an attempt at consolidating those disparate scripts into one unified command.
+## Script de carga de la base de datos 🌱
+El proyecto incluye varios scripts para cargar un conjunto de documentos en la base de datos. `scripts/seed_db.py` intenta consolidar esos scripts independientes en un único comando.
 
-This script will:
+Este script:
 1. Download a set of SEC 10-K & 10-Q documents to a local temp directory
-1. Upload those SEC documents to the S3 folder specified by `$S3_ASSET_BUCKET_NAME`
-1. Crawl through all the PDF files in the S3 folder and upsert a database row into the Document table based on the path of the file within the bucket
+1. Carga esos documentos SEC en la carpeta S3 especificada por `$S3_ASSET_BUCKET_NAME`.
+1. Recorre todos los archivos PDF de la carpeta S3 y crea o actualiza una fila en la tabla `Document` según la ruta del archivo dentro del bucket.
 
-### Use Cases
-This is useful for times when:
-1. You want to setup a local environment with your local Postgres DB to have a set of documents in the `documents` table
-    * When running locally, this will use [`localstack`](https://localstack.cloud/) to store the documents into a local S3 bucket instead of a real one.
-1. You want to update the documents present in either Prod or Preview DBs
-    * In fact, this is the very script that is run by the [`llama-app-cron` cron job service](https://github.com/run-llama/sec-insights/blob/294d8e5/render.yaml#L38) that gets setup by the `render.yaml` blueprint when deploying this service to Render.com.
+### Casos de uso
+Esto resulta útil cuando:
+1. Quieres configurar un entorno local con tu base de datos PostgreSQL local y tener documentos en la tabla `documents`.
+    * En local, usa [`localstack`](https://localstack.cloud/) para almacenar los documentos en un bucket S3 local en lugar de uno real.
+1. Quieres actualizar los documentos de las bases de datos de producción o preview.
+    * De hecho, este es el script que ejecuta el servicio de tareas programadas [`llama-app-cron`](https://github.com/run-llama/sec-insights/blob/294d8e5/render.yaml#L38), configurado por el blueprint `render.yaml` al desplegar el servicio en Render.com.
 
-### Usage
-To run the script, make sure you've:
-1. Activated your Python virtual environment using `poetry shell`
-1. Installed all the pre-requisite dependencies for the `SEC Document Downloader` script.
-1. Defined all the environment variables from `.env.development` within your shell environment according to the environment you want to execute the seed script (e.g. local, preview, prod environments)
+### Uso
+Para ejecutar el script, asegúrate de haber:
+1. Activado el entorno virtual de Python con `poetry shell`.
+1. Instalado todas las dependencias necesarias para el script `Descargador de documentos SEC`.
+1. Definido en el entorno del shell todas las variables de `.env.development` según el entorno en el que quieras ejecutar el script (por ejemplo, local, preview o producción).
 
-After that you can run `python scripts/seed_db.py` to start the seed process.
+Después puedes ejecutar `python scripts/seed_db.py` para iniciar el proceso de carga.
 
-To make things easier, the Makefile has some shorthand commands.
+Para facilitarlo, el Makefile incluye algunos comandos abreviados.
 1. `make seed_db`
-    - Just runs the `seed_db.py` script with no CLI args, so just based on what env vars you've set
+    - Ejecuta `seed_db.py` sin argumentos CLI, basándose en las variables de entorno configuradas.
 1. `make seed_db_preview`
-    - Same as `make seed_db` but only loads SEC documents from Amazon & Meta
-    - We don't need to load that many company documents for Preview environments.
+    - Igual que `make seed_db`, pero solo carga documentos SEC de Amazon y Meta.
+    - No es necesario cargar tantos documentos de empresas en los entornos preview.
 1. `make seed_db_local`
-    - To be used for local database seeding
-    - Runs `seed_db.py` just for $AMZN & $META documents
-    - Sets up the localstack bucket to actually serve the documents locally as well, so you can load them in your local browser.
+    - Se utiliza para cargar datos en la base de datos local.
+    - Ejecuta `seed_db.py` solo para los documentos de `$AMZN` y `$META`.
+    - Configura el bucket de LocalStack para servir también los documentos localmente y poder cargarlos en el navegador.
 1. `make seed_db_based_on_env`
-    - Automatically calls one of the above shorthands based on the `RENDER` & `IS_PREVIEW_ENV` environment variables
+    - Llama automáticamente a uno de los comandos anteriores según las variables de entorno `RENDER` e `IS_PREVIEW_ENV`.

@@ -4,38 +4,38 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-SEC Insights uses the Retrieval Augmented Generation (RAG) capabilities of [LlamaIndex](https://github.com/jerryjliu/llama_index) to answer questions about SEC 10-K & 10-Q documents.
+SEC Insights utiliza las capacidades de generación aumentada mediante recuperación (RAG) de [LlamaIndex](https://github.com/jerryjliu/llama_index) para responder preguntas sobre documentos SEC 10-K y 10-Q.
 
-You can start using the application now at [secinsights.ai](https://www.secinsights.ai/)
+Puedes empezar a usar la aplicación en [secinsights.ai](https://www.secinsights.ai/)
 
-You can also check out our [End-to-End tutorial guide on YouTube](https://youtu.be/2O52Tfj79T4?si=CYUcaBkc9P9g_m0P) for this project! This video covers product features, system architecture, development environment setup, and how to use this application with your own custom documents *(beyond just SEC filings!)*. The video has chapters so you can skip to the section most relevant to you.
+También puedes consultar nuestra [guía de tutorial de extremo a extremo en YouTube](https://youtu.be/2O52Tfj79T4?si=CYUcaBkc9P9g_m0P). El vídeo cubre las funcionalidades del producto, la arquitectura del sistema, la configuración del entorno de desarrollo y el uso de documentos propios *(incluso distintos de los informes SEC)*. Incluye capítulos para ir directamente a la sección que más te interese.
 
-## Why did we make this? 🤔
-As RAG applications look to move increasingly from prototype to production, we thought our developer community would find value in having a complete example of a working real-world RAG application.
+## ¿Por qué creamos este proyecto? 🤔
+A medida que las aplicaciones RAG pasan de prototipos a producción, pensamos que nuestra comunidad de desarrolladores encontraría útil disponer de un ejemplo completo de una aplicación RAG real y funcional.
 
-SEC Insights works as well locally as it does in the cloud. It also comes with many product features that will be immediately applicable to most RAG applications.
+SEC Insights funciona tanto localmente como en la nube. También incluye muchas funcionalidades aplicables de inmediato a la mayoría de las aplicaciones RAG.
 
-Use this repository as a reference when building out your own RAG application or fork it entirely to start your project off with a solid foundation.
+Puedes usar este repositorio como referencia para crear tu propia aplicación RAG full-stack o hacer un fork y utilizarlo como base sólida para tu proyecto.
 
-## Product Features 😎
-- Chat-based Document Q&A against a pool of documents
-- Citation of source data that LLM response was based on
-- PDF Viewer with highlighting of citations
-- Use of API-based tools ([polygon.io](https://polygon.io/)) for answering quantitative questions
-- Token-level streaming of LLM responses via [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
-- Streaming of Reasoning Steps (Sub-Questions) within Chat
+## Funcionalidades del producto 😎
+- Preguntas y respuestas sobre documentos mediante chat
+- Citas de las fuentes en las que se basa cada respuesta del modelo
+- Visor de PDF con resaltado de citas
+- Uso de herramientas basadas en API ([polygon.io](https://polygon.io/)) para responder preguntas cuantitativas
+- Streaming de las respuestas del LLM a nivel de token mediante [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
+- Streaming de los pasos de razonamiento (subpreguntas) dentro del chat
 
-## Development Features 🤓
-- Infrastructure-as-code for deploying directly to [Vercel](https://vercel.com/) & [Render](https://render.com/)
-- Continuous deployments provided by Vercel & Render.com. Shipping changes is as easy as merging into your `main` branch.
-- Production & Preview environments for both Frontend & Backend deployments! Easily try your changes before release.
-- Robust local environment setup making use of [LocalStack](https://localstack.cloud/) & [Docker](https://www.docker.com/) compose
-- Monitoring & Profiling provided by [Sentry](https://sentry.io/welcome/)
-- Load Testing provided by [Loader.io](https://loader.io/)
-- LLM Observability by [Arize Phoenix](https://phoenix.arize.com/)
-- Variety of python scripts for REPL-based chat & data management
+## Funcionalidades para desarrollo 🤓
+- Infraestructura como código para desplegar directamente en [Vercel](https://vercel.com/) y [Render](https://render.com/)
+- Despliegues continuos proporcionados por Vercel y Render.com; publicar cambios es tan sencillo como fusionarlos en la rama `main`
+- Entornos de producción y preview para frontend y backend, para probar cambios antes de publicarlos
+- Configuración local robusta con [LocalStack](https://localstack.cloud/) y [Docker](https://www.docker.com/) Compose
+- Monitorización y perfilado mediante [Sentry](https://sentry.io/welcome/)
+- Pruebas de carga mediante [Loader.io](https://loader.io/)
+- Observabilidad de LLM con [Arize Phoenix](https://phoenix.arize.com/)
+- Variedad de scripts de Python para chat interactivo y gestión de datos
 
-## Tech Stack ⚒️
+## Stack tecnológico ⚒️
 - Frontend
     - [React](https://react.dev/) / [Next.js](https://nextjs.org/)
     - [Tailwind CSS](https://tailwindcss.com/)
@@ -46,33 +46,33 @@ Use this repository as a reference when building out your own RAG application or
     - [OpenAI](https://openai.com/) (gpt-3.5-turbo + text-embedding-ada-002)
     - [PGVector](https://github.com/pgvector/pgvector)
     - [LlamaIndex 🦙](https://www.llamaindex.ai/)
-- Infrastructure
+- Infraestructura
     - [Render.com](https://render.com/)
-        - Backend hosting
+        - Alojamiento del backend
         - [Postgres 15](https://www.postgresql.org/)
     - [Vercel](https://vercel.com/)
-        - Frontend Hosting
+        - Alojamiento del frontend
     - [AWS](https://aws.amazon.com/)
         - [Cloudfront](https://aws.amazon.com/cloudfront/)
         - [S3](https://aws.amazon.com/s3/)
 
-### System Architecture
+### Arquitectura del sistema
 [![System Architecture](https://www.plantuml.com/plantuml/png/jLJ1RjD04BtxAuPmo2bLsgGIaH0YYMqe0XhL4HoggjhOKsVRzMoqEsuR4F_EncxTDEjGX8GFbdRUcpTldZVfGeXNaX2KMEkI8PC6KvQQRF0ggv7FKJo_d9zUdfry-3WFWgR3wiAzUAtS6vabvJQmDv9MmeW2LYAz4Jd2pm3SCt6dtEYIigbMsi3hy70wZ4O0NKYGOT70a5OuQoW4fqlW9O8mHj_LG2scJORcGMXGFLKzriI9_85mE6pEFYjXDAXvlS8jFAuU3s_qsf1gyubMsGuuLZ8dI95S9VWLR6MIAbrc_psHez6R_cJKdi1pFvbWiH1sxqUAmsWIzlq9uU1usE__pOJQQ2t_R4-lUJWS7KTLTRwKwGsXjN3qN8nqji_gt0YoZeN4EtPzx0NB1bCMbAkzgKJZA8p2bjodW-Zu3way2NVEa5pVGQgB3WWBzV5XtdaiB8zd9zLW1rpKrQdH19_qeZusNswcBUS6xMP0VRqwu-y998FEezoiN2YPmYoCOL8wHNuGd1bvAnWXOMr4ZbDDZFVSS9xqedj6Gq91WkPMfcWRwIIQTYr4MIuCECSNyBQNwJlgxRXrixHQvveEf8POag1KEhbGiDXfQryzGMAptZH_qIHP6qdvfadX5UzjEbqXZKyUFRyumwTxcxX47l_KEj_GfAYQ8Bwwv0wkBSIEp4wq8dSXSNpd5KHsNLekaDX2QJULfSmofFhdOGE_7thdDUMYpR5NsQOtDwAnlWstteTsvaitfDLskUgzynstKXsnpOpNN36RhThXFLxz3Vsv7kMV51j_mNjdgYnKy1i0)](https://www.plantuml.com/plantuml/uml/jLJ1RjD04BtxAuPmo2bLsgGIaH0YYMqe0XhL4HoggjhOKsVRzMoqEsuR4F_EncxTDEjGX8GFbdRUcpTldZVfGeXNaX2KMEkI8PC6KvQQRF0ggv7FKJo_d9zUdfry-3WFWgR3wiAzUAtS6vabvJQmDv9MmeW2LYAz4Jd2pm3SCt6dtEYIigbMsi3hy70wZ4O0NKYGOT70a5OuQoW4fqlW9O8mHj_LG2scJORcGMXGFLKzriI9_85mE6pEFYjXDAXvlS8jFAuU3s_qsf1gyubMsGuuLZ8dI95S9VWLR6MIAbrc_psHez6R_cJKdi1pFvbWiH1sxqUAmsWIzlq9uU1usE__pOJQQ2t_R4-lUJWS7KTLTRwKwGsXjN3qN8nqji_gt0YoZeN4EtPzx0NB1bCMbAkzgKJZA8p2bjodW-Zu3way2NVEa5pVGQgB3WWBzV5XtdaiB8zd9zLW1rpKrQdH19_qeZusNswcBUS6xMP0VRqwu-y998FEezoiN2YPmYoCOL8wHNuGd1bvAnWXOMr4ZbDDZFVSS9xqedj6Gq91WkPMfcWRwIIQTYr4MIuCECSNyBQNwJlgxRXrixHQvveEf8POag1KEhbGiDXfQryzGMAptZH_qIHP6qdvfadX5UzjEbqXZKyUFRyumwTxcxX47l_KEj_GfAYQ8Bwwv0wkBSIEp4wq8dSXSNpd5KHsNLekaDX2QJULfSmofFhdOGE_7thdDUMYpR5NsQOtDwAnlWstteTsvaitfDLskUgzynstKXsnpOpNN36RhThXFLxz3Vsv7kMV51j_mNjdgYnKy1i0)
 
-## Usage 💻
-See `README.md` files in `frontend/` & `backend/` folders for individual setup instructions for each. As mentioned above, we also have a YouTube tutorial [here](https://youtu.be/2O52Tfj79T4?si=1Tm3zvuqna5ei4Cu&t=677) that covers how to setup this project's development environment.
+## Uso 💻
+Consulta los archivos `README.md` de las carpetas `frontend/` y `backend/` para conocer las instrucciones específicas de configuración. También puedes consultar el [tutorial de YouTube](https://youtu.be/2O52Tfj79T4?si=1Tm3zvuqna5ei4Cu&t=677), que explica cómo configurar el entorno de desarrollo.
 
-We've also included a config for a [GitHub Codespace](https://github.com/features/codespaces) in [`.devcontainer/devcontainer.json`](https://github.com/run-llama/sec-insights/blob/main/.devcontainer/devcontainer.json). If you choose to use GitHub Codespaces, your codespace will come pre-configured with a lot of the libraries and system dependencies that are needed to run this project. This is probably the fastest way to get this project up and running! Having said that, developers have successfully set-up this project in Linux, macOS, and Windows environments!
+El repositorio incluye una configuración para [GitHub Codespaces](https://github.com/features/codespaces) en [`.devcontainer/devcontainer.json`](https://github.com/run-llama/sec-insights/blob/main/.devcontainer/devcontainer.json). Al usar GitHub Codespaces, el entorno ya incluye muchas de las bibliotecas y dependencias del sistema necesarias. Es una de las formas más rápidas de poner en marcha el proyecto. También se ha configurado correctamente en Linux, macOS y Windows.
 
-If you have any questions when trying to run this project, you may find your answer quickly by reviewing our [FAQ](./FAQ.md) or by searching through our [GitHub issues](https://github.com/run-llama/sec-insights/issues)! If you don't see a satisfactory answer to your question, feel free to [open a GitHub issue](https://github.com/run-llama/sec-insights/issues/new) so we may assist you!
+Si tienes problemas, revisa primero las respuestas del [FAQ](./FAQ.md) o busca en los [issues de GitHub](https://github.com/run-llama/sec-insights/issues). Si no encuentras una solución, puedes [abrir un issue](https://github.com/run-llama/sec-insights/issues/new).
 
-We also have a dedicated [#sec-insights channel on our Discord](https://discord.com/channels/1059199217496772688/1150942525968879636) where we may be able to assist with smaller issues more instantaneously.
+También existe un [canal #sec-insights en Discord](https://discord.com/channels/1059199217496772688/1150942525968879636) para consultas breves.
 
-## Caveats 🧐
-- The frontend currently doesn't support Mobile
-- Our main goal with this project is to provide a solid foundation for full-stack RAG apps. There is still room for improvement in terms of RAG performance!
+## Consideraciones 🧐
+- El frontend actualmente no es compatible con dispositivos móviles.
+- El objetivo principal es ofrecer una base sólida para aplicaciones RAG full-stack; el rendimiento RAG todavía puede mejorarse.
 
-## Contributing 💡
-We remain very open to contributions! We're looking forward to seeing the ideas and improvements the LlamaIndex community is able to provide.
+## Contribuciones 💡
+Estamos abiertos a contribuciones y esperamos con interés las ideas que la comunidad de LlamaIndex pueda aportar.
 
-Huge shoutout to [**@Evanc123**](https://github.com/Evanc123) for his fantastic work building the frontend for this project!
+Un agradecimiento especial a [**@Evanc123**](https://github.com/Evanc123) por su excelente trabajo desarrollando el frontend.
