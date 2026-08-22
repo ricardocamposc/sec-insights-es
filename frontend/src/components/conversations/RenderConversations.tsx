@@ -94,7 +94,7 @@ const SubProcessDisplay: React.FC<SubProcessDisplayProps> = ({
         className="flex w-max cursor-pointer items-center rounded p-1 font-nunito text-sm text-gray-90 hover:bg-gray-00"
         onClick={() => toggleOpen()}
       >
-        View progress
+        Ver progreso
         <div className="px-3 py-2">
           {isOpen ? (
             <PiCaretDownBold />
@@ -106,7 +106,7 @@ const SubProcessDisplay: React.FC<SubProcessDisplayProps> = ({
       {isOpen && (
         <>
           <div className="ml-4 border-l border-l-gray-30 pb-1 pl-4 font-nunito text-[11px] font-light text-gray-60">
-            <div>Question Received</div>
+            <div>Pregunta recibida</div>
             {subQuestions.length > 0 && (
                 <div
                   key={`${messageId}-sub-process`}
@@ -119,7 +119,7 @@ const SubProcessDisplay: React.FC<SubProcessDisplayProps> = ({
                         <div
                           key={`${messageId}-${subProcessIndex}-${subQuestionIndex}`}
                         >
-                          Generated Sub Query #{subQuestionIndex + 1}{" "}
+                          Consulta secundaria generada #{subQuestionIndex + 1}{" "}
                           <div className="flex w-11/12 flex-col rounded border">
                             <div className="rounded-t border-b bg-gray-00 p-2 font-bold text-gray-90">
                               {subQuestion.question}
@@ -229,7 +229,7 @@ const ErrorMessageDisplay = () => {
         <AiFillExclamationCircle className="fill-red-500" size={20} />
       </div>
       <div className="ml-4 text-red-400">
-        Error: unable to load chat response
+        Error: no se pudo cargar la respuesta del chat
       </div>
     </div>
   );
@@ -287,9 +287,9 @@ const AssistantDisplay: React.FC<AssistantDisplayProps> = ({
                 {message.content}
               </p>
               <p className="flex items-center justify-start p-1 text-xs text-gray-60">
-                This statement is for informational purposes only and does not
-                serve as professional financial advice. Please consult a
-                Certified Public Accountant
+                Esta información es únicamente de carácter informativo y no
+                constituye asesoría financiera profesional. Consulta a un
+                contador público certificado.
               </p>
             </div>
           </div>
@@ -340,7 +340,7 @@ export const RenderConversations: React.FC<IRenderConversation> = ({
             />
           );
         } else {
-          display = <div>Sorry, there is a problem.</div>;
+          display = <div>Lo sentimos, ocurrió un problema.</div>;
         }
         if (index === messages.length - 1) {
           return (
@@ -363,31 +363,30 @@ export const RenderConversations: React.FC<IRenderConversation> = ({
               <HiOutlineChatAlt2 size={40} />
             </div>
             <div className="mb-2 w-3/4 text-center text-lg font-bold">
-              Ask SEC Insights questions about the documents you&apos;ve
-              selected, such as:
+              Haz preguntas sobre los documentos que seleccionaste, por ejemplo:
             </div>
             <div className="m-auto flex w-full flex-wrap justify-center">
               <button
                 onClick={() =>
-                  setUserMessage("Which company had the highest revenue?")
+                  setUserMessage("¿Qué empresa tuvo los mayores ingresos?")
                 }
                 className="m-1 flex-shrink rounded-full border border-gray-60 px-3 py-1 hover:bg-gray-15"
               >
-                Which company had the highest revenue?
+                ¿Qué empresa tuvo los mayores ingresos?
               </button>
               <button
-                onClick={() => setUserMessage("What are their main business focus areas?")}
+                onClick={() => setUserMessage("¿Cuáles son sus principales áreas de negocio?")}
                 className="m-1 flex-shrink rounded-full border border-gray-60 px-3 py-1 hover:bg-gray-15"
               >
-                What are their main business focus areas?
+                ¿Cuáles son sus principales áreas de negocio?
               </button>
               <button
                 onClick={() =>
-                  setUserMessage("What are the biggest discussed risks?")
+                  setUserMessage("¿Cuáles son los principales riesgos mencionados?")
                 }
                 className="m-1 flex-shrink rounded-full border border-gray-60 px-3 py-1 hover:bg-gray-15"
               >
-                What are the biggest discussed risks?
+                ¿Cuáles son los principales riesgos mencionados?
               </button>
             </div>
           </div>

@@ -138,7 +138,7 @@ export const TitleAndDropdown = () => {
                   getOptionLabel={(option: SelectOption) => option.label}
                   getOptionValue={(option: SelectOption) => option.value}
                   value={selectedDocumentType}
-                  placeholder="Select Document Type"
+                  placeholder="Selecciona el tipo de documento"
                   components={{
                     IndicatorSeparator: () => null,
                     DropdownIndicator: () => null,
@@ -160,7 +160,7 @@ export const TitleAndDropdown = () => {
                   getOptionValue={(option: SelectOption) => option.value}
                   onChange={setSelectedYear}
                   value={selectedYear}
-                  placeholder="Select Year"
+                  placeholder="Selecciona el año"
                   components={{
                     IndicatorSeparator: () => null,
                     DropdownIndicator: () => null,
@@ -180,7 +180,7 @@ export const TitleAndDropdown = () => {
 
               <div className="absolute -right-[10px] bottom-[-4px] w-[140px] font-nunito text-[10px] text-[#7F7F7F]">
                 {" "}
-                <span className="font-bold">Shift + Enter </span>to add to list{" "}
+                <span className="font-bold">Shift + Enter </span>para agregar a la lista{" "}
               </div>
             </div>
           </div>
@@ -192,7 +192,7 @@ export const TitleAndDropdown = () => {
                   <CgFileDocument size={46} />
                 </div>
                 <div className="w-84 text-center md:w-64">
-                  Use the document selector above to start adding documents
+                Usa el selector de documentos de arriba para comenzar a agregar documentos
                 </div>
               </div>
             )}
@@ -234,13 +234,13 @@ export const TitleAndDropdown = () => {
                         selectedDocuments.length}
                     </span>{" "}
                     {isStartConversationButtonEnabled ? (
-                      <>more docs</>
+                      <>documentos más</>
                     ) : (
-                      <>docs</>
+                      <>documentos</>
                     )}
                   </div>
                   <div className="ml-1 font-nunito ">
-                    {isStartConversationButtonEnabled ? <>or</> : <>to</>}{" "}
+                    {isStartConversationButtonEnabled ? <>o</> : <>para</>}{" "}
                   </div>
                 </>
               )}
@@ -261,7 +261,7 @@ export const TitleAndDropdown = () => {
                       </div>
                     ) : (
                       <>
-                        start your conversation
+                        inicia tu conversación
                         <div className="ml-2">
                           <AiOutlineArrowRight />
                         </div>

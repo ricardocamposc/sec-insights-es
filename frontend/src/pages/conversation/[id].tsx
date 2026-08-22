@@ -25,8 +25,10 @@ export default function Conversation() {
 
   const { shutdown } = useIntercom();
   useEffect(() => {
-    shutdown();
-  }, []);
+    if (ENABLE_INTERCOM) {
+      shutdown();
+    }
+  }, [shutdown]);
 
   const { isOpen: isShareModalOpen, toggleModal: toggleShareModal } =
     useModal();
@@ -152,7 +154,7 @@ export default function Conversation() {
             }}
             className="m-4 rounded border bg-llama-indigo px-8 py-2 font-bold text-white hover:bg-[#3B3775]"
           >
-            Back Home
+            Volver al inicio
           </button>
         </div>
       </div>
@@ -173,13 +175,13 @@ export default function Conversation() {
                 }}
                 className="ml-4 flex items-center justify-center rounded px-2 font-light text-[#9EA2B0] hover:text-gray-90"
               >
-                <BiArrowBack className="mr-1" /> Back to Document Selection
+                <BiArrowBack className="mr-1" /> Volver a la selección de documentos
               </button>
               <button
                 onClick={toggleShareModal}
                 className="mr-3 flex items-center justify-center rounded-full border border-gray-400 p-1 px-3 text-gray-400 hover:bg-gray-15"
               >
-                <div className="text-xs font-medium">Share</div>
+                <div className="text-xs font-medium">Compartir</div>
                 <FiShare className="ml-1" size={12} />
               </button>
             </div>
@@ -196,7 +198,7 @@ export default function Conversation() {
               ref={textFocusRef}
               rows={1}
               className="box-border w-full flex-grow resize-none overflow-hidden rounded px-5 py-3 pr-10 text-gray-90 placeholder-gray-60 outline-none"
-              placeholder={"Start typing your question..."}
+              placeholder={"Escribe tu pregunta..."}
               value={userMessage}
               onChange={handleTextChange}
             />

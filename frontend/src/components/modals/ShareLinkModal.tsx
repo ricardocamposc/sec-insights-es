@@ -25,11 +25,11 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   }, [isOpen]);
 
   return (
-    <Modal isOpen={isOpen} toggleModal={toggleModal} title="Share Conversation">
+    <Modal isOpen={isOpen} toggleModal={toggleModal} title="Compartir conversación">
       <p className="mb-6 mt-2 text-sm text-gray-500">
-        Note: this is a public page. Anyone with this link can view the
-        contents of the page. This statement is for informational purposes only
-        and does not serve as professional financial advice.
+        Nota: esta es una página pública. Cualquier persona con este enlace
+        puede ver su contenido. Esta información es únicamente de carácter
+        informativo y no constituye asesoría financiera profesional.
       </p>
 
       <div className="flex items-center space-x-2">
@@ -44,7 +44,7 @@ const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
           onClick={copyToClipboard}
           className="rounded bg-llama-indigo px-4 py-2 font-bold text-white opacity-90 hover:opacity-100"
         >
-          Copy
+          Copiar
         </button>
       </div>
     </Modal>

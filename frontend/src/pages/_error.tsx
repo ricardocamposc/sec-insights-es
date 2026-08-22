@@ -9,8 +9,8 @@ const ErrorPage = ({ statusCode }: ErrorProps): JSX.Element => {
   return (
     <p>
       {statusCode
-        ? `An error ${statusCode} occurred on server`
-        : "An error occurred on client"}
+        ? `Ocurrió un error ${statusCode} en el servidor`
+        : "Ocurrió un error en el cliente"}
     </p>
   );
 };

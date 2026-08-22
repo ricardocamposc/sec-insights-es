@@ -21,10 +21,10 @@ export const MarketingSection = () => {
       <div className="mb-24 mt-24 flex h-max min-h-[200px] w-full items-center justify-center">
         <div className="flex flex-col items-center justify-center">
           <div className="font-bold text-llama-indigo">
-            SEC Insights presents
+            SEC Insights presenta
           </div>
           <div className="w-3/4 text-center font-lora text-4xl font-bold">
-            The next step in analyzing complex financial documents
+            El siguiente paso para analizar documentos financieros complejos
           </div>
         </div>
       </div>
@@ -63,24 +63,24 @@ export const MarketingSection = () => {
 
         <div className="w-full text-center sm:w-1/2 sm:text-left">
           <div className="sm:3/5 mx-auto w-4/5 text-3xl font-bold sm:mx-0">
-            Take a peek under the hood and stream insights directly from the
-            algorithm
+            Mira cómo funciona la aplicación y recibe información directamente
+            del algoritmo
           </div>
           <div className="sm:3/5 mx-auto mt-3 w-4/5 font-lora text-xl sm:mx-0">
-            SEC Insights does more than give you the answer. It helps you
-            understand how that answer was generated in the first place.
+            SEC Insights hace más que darte una respuesta. También te ayuda a
+            entender cómo se generó.
           </div>
         </div>
       </div>
       <div className="landing-page-gradient-3 mx-auto flex h-max min-h-[500px] w-4/5 flex-col items-center justify-center sm:flex-row">
         <div className="w-full text-center text-center sm:w-1/2 sm:text-left">
           <div className="mx-auto w-4/5 text-3xl font-bold sm:w-4/5 ">
-            Extract meaningful insight from inquiries across multiple documents
+            Obtén información valiosa a partir de consultas en varios documentos
           </div>
           <div className="mx-auto mt-3 w-4/5 font-lora text-xl sm:w-4/5 ">
-            With the ability to simultaneously examine multiple documents, SEC
-            Insights provides comprehensive insights, enabling deep comparisons
-            and contrasts.
+            Al examinar varios documentos al mismo tiempo, SEC Insights ofrece
+            información completa para realizar comparaciones y contrastes
+            detallados.
           </div>
         </div>
         <div
@@ -110,13 +110,12 @@ export const MarketingSection = () => {
       <div className="landing-page-gradient-3 mx-auto flex h-max min-h-[500px] w-4/5 flex-col items-center justify-center sm:flex-row">
         <div className="w-full text-center sm:w-1/2 sm:text-left">
           <div className="mx-auto w-4/5 text-3xl font-bold sm:w-4/5 ">
-            Dive deeper into your response by viewing citations at the paragraph
-            level
+            Profundiza en tu respuesta consultando las citas a nivel de párrafo
           </div>
           <div className="mx-auto mt-3 w-4/5 font-lora text-xl sm:w-4/5 ">
-            Navigate through dense financial information with precision. Our
-            tool guides you to paragraph-level citations across multiple
-            documents, enabling an unmatched level of clarity and comprehension.
+            Navega con precisión por información financiera compleja. Nuestra
+            herramienta te lleva a las citas a nivel de párrafo en varios
+            documentos para ofrecer mayor claridad y comprensión.
           </div>
         </div>
         <div
@@ -148,13 +147,13 @@ export const MarketingSection = () => {
           <div className="flex h-max min-h-[300px] w-3/4 items-center justify-center">
             <div className="flex flex-col items-center justify-center rounded-lg border bg-white p-4">
               <div className="w-3/4 text-center font-lora text-3xl font-bold">
-                Interested? Get in touch to discuss enterprise use cases or
-                provide feedback
+                ¿Te interesa? Contáctanos para conversar sobre casos de uso
+                empresariales o enviarnos tus comentarios
               </div>
               <div className="flex items-center justify-around">
                 <a href="mailto:hi@secinsights.ai" target="_blank">
                   <button className="m-4 rounded border bg-llama-indigo px-8 py-2 font-bold text-white hover:bg-[#3B3775]">
-                    Get in Touch
+                    Contáctanos
                   </button>
                 </a>
               </div>
@@ -168,9 +167,9 @@ export const MarketingSection = () => {
               onClick={scrollToTop}
               className="mb-4 font-bold text-gray-90"
             >
-              Back to Top
+              Volver al inicio
             </button>
-            <div>©LlamaIndex Inc. 2023. All rights reserved.</div>
+            <div>©LlamaIndex Inc. 2023. Todos los derechos reservados.</div>
           </div>
         </div>
       </div>
