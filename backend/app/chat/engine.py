@@ -50,18 +50,22 @@ from app.chat.qa_response_synth import get_custom_response_synth
 
 
 logger = logging.getLogger(__name__)
+s3_fs_singleton: Optional[AsyncFileSystem] = None
 
 
 def close_s3_fs(fs: AsyncFileSystem) -> None:
-    """Close the S3 client and the background loop created by fsspec.
+    """Close the S3 client while keeping fsspec's shared loop available.
 
-    s3fs creates a process-wide daemon event loop for synchronous filesystem
-    operations. Leaving that loop to the garbage collector produces asyncio
-    destructor errors when a chat request finishes or the process shuts down.
+    s3fs uses one process-wide daemon event loop for synchronous filesystem
+    operations. It must remain running while subsequent chat requests use S3;
+    the loop is closed once by ``close_s3_loop`` during application shutdown.
     """
     if getattr(fs, "_s3creator", None) is not None:
         fs.close_session(fs.loop, fs._s3creator)
 
+
+def close_s3_loop() -> None:
+    """Stop and close fsspec's shared loop during application shutdown."""
     loop = fsspec_async.loop[0]
     thread = fsspec_async.iothread[0]
     if loop is None:
@@ -77,7 +81,20 @@ def close_s3_fs(fs: AsyncFileSystem) -> None:
     fsspec_async.iothread[0] = None
 
 
+def close_s3_resources() -> None:
+    """Close the process-wide S3 filesystem and its fsspec loop."""
+    global s3_fs_singleton
+    if s3_fs_singleton is not None:
+        close_s3_fs(s3_fs_singleton)
+        s3_fs_singleton = None
+    close_s3_loop()
+
+
 def get_s3_fs() -> AsyncFileSystem:
+    global s3_fs_singleton
+    if s3_fs_singleton is not None:
+        return s3_fs_singleton
+
     s3 = s3fs.S3FileSystem(
         key=settings.AWS_KEY,
         secret=settings.AWS_SECRET,
@@ -85,6 +102,7 @@ def get_s3_fs() -> AsyncFileSystem:
     )
     if not (settings.RENDER or s3.exists(settings.S3_BUCKET_NAME)):
         s3.mkdir(settings.S3_BUCKET_NAME)
+    s3_fs_singleton = s3
     return s3
 
 
@@ -228,12 +246,9 @@ async def get_chat_engine(
 ) -> OpenAIAgent:
     callback_manager = CallbackManager([callback_handler])
     s3_fs = get_s3_fs()
-    try:
-        doc_id_to_index = await build_doc_id_to_index_map(
-            callback_manager, conversation.documents, fs=s3_fs
-        )
-    finally:
-        close_s3_fs(s3_fs)
+    doc_id_to_index = await build_doc_id_to_index_map(
+        callback_manager, conversation.documents, fs=s3_fs
+    )
     id_to_doc: Dict[str, DocumentSchema] = {
         str(doc.id): doc for doc in conversation.documents
     }
