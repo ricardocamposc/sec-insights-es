@@ -49,7 +49,7 @@ backend:
 
 | Variable | Descripción | Valor local recomendado |
 | --- | --- | --- |
-| `DATABASE_URL` | URL de PostgreSQL. | `postgresql://user:password@127.0.0.1:5435/llama_app_db` si ejecutas FastAPI en el host; dentro del contenedor usa `postgresql://user:password@db:5432/llama_app_db`. |
+| `DATABASE_URL` | URL de PostgreSQL. | `postgresql://user:password@127.0.0.1:${POSTGRES_PORT:-5432}/llama_app_db` si ejecutas FastAPI en el host; dentro del contenedor usa `postgresql://user:password@db:5432/llama_app_db`. |
 | `OPENAI_API_KEY` | Clave de API para el LLM y embeddings. | Tu clave real de OpenAI. |
 | `AWS_KEY` | Clave de acceso usada por S3/LocalStack. | `test` en local. |
 | `AWS_SECRET` | Clave secreta usada por S3/LocalStack. | `test` en local. |
@@ -94,6 +94,30 @@ Si no se definen, el backend usa estos valores predeterminados:
 
 `IS_PREVIEW_ENV` también puede definirse en Render para activar la configuración
 de preview; no es necesaria en local.
+
+### Variables de Docker Compose
+
+Estas variables configuran el nombre del proyecto y el puerto de PostgreSQL
+publicado en el host:
+
+| Variable | Predeterminado | Uso |
+| --- | --- | --- |
+| `COMPOSE_PROJECT_NAME` | `sec-insights-es` | Nombre que Docker Compose utiliza para los servicios, la red y los volúmenes del proyecto. |
+| `POSTGRES_PORT` | `5432` | Puerto del host que se conecta al puerto interno `5432` de PostgreSQL. |
+
+Puedes cambiar `POSTGRES_PORT` en `backend/.env` si el puerto `5432` ya está
+ocupado. `DATABASE_URL` en `.env.development` usa esta variable, por lo que la
+conexión del backend ejecutado en el host se actualiza automáticamente:
+
+```env
+COMPOSE_PROJECT_NAME=sec-insights-es
+POSTGRES_PORT=5433
+DATABASE_URL=postgresql://user:password@127.0.0.1:${POSTGRES_PORT:-5432}/llama_app_db
+```
+
+Si `POSTGRES_PORT` no está definido, Docker Compose y `DATABASE_URL` utilizan
+`5432`. La URL de `.env.docker` conserva `db:5432`, porque los contenedores se
+conectan mediante la red interna y PostgreSQL siempre escucha en ese puerto.
 
 ### Variables específicas de Docker
 
